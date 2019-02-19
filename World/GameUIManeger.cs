@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class GameUIManeger : MonoBehaviour
 {
-    public static GameUIManeger instance { get; private set; }    
+    public static GameUIManeger instance { get; private set; }
+
+    public List<ISound> AllSound = new List<ISound>();
 
     private void Start()
     {
@@ -20,4 +22,27 @@ public class GameUIManeger : MonoBehaviour
     {
 
     }
+
+    public void SetMusicValue(float value)
+    {
+        foreach(var s in AllSound)
+        {
+            s.Volume(value, TypeSound.music);
+        }
+    }
+
+    public void SetSoundValue(float value)
+    {
+        foreach (var s in AllSound)
+        {
+            s.Volume(value, TypeSound.sound);
+        }
+    }
+
+    public void AddSound(ISound sound)
+    {
+        AllSound.Add(sound);
+    }
+
+
 }

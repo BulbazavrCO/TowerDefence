@@ -17,6 +17,7 @@ public enum TypeAttak
    all
 }
 
+[RequireComponent(typeof(AllSounds))]
 public abstract class Tower : MonoBehaviour, ICell, ISelected, ICreate
 {
     public int X { get; private set; }
@@ -39,10 +40,12 @@ public abstract class Tower : MonoBehaviour, ICell, ISelected, ICreate
     protected float attakRange;
     protected TypeDamage typeTower;
     protected TypeAttak typeAttak;
+    protected AllSounds sound;
 
     protected bool creation = true;
 
     private float calculateDamage;
+    
 
     [Header("Ссылка на ScritableObject объекта")]
     public InfoTower infoTower;    
@@ -101,6 +104,8 @@ public abstract class Tower : MonoBehaviour, ICell, ISelected, ICreate
         typeTower = infoTower.typeTower;
         typeAttak = infoTower.typeAttak;
         render.material = standart;
+        sound = GetComponent<AllSounds>();
+        sound.AddSound();
         creation = false;
     }
 
