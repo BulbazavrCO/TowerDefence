@@ -13,6 +13,11 @@ public class GameUIManeger : MonoBehaviour
         instance = this;
     }
 
+    public void CreateTower(GameObject go)
+    {
+        GameManager.instance.Create(go);
+    }
+
     public void SelectedTower(TowerInfo info)
     {
 

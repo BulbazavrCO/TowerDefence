@@ -5,12 +5,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("Размеры карты")]
-    public int xSize;
-    public int zSize;
-    public int coefSize;    
+    [SerializeField] private int xSize = 15;
+    [SerializeField] private int zSize = 15;
+
+    public int XSize { get => xSize; }
+    public int ZSize { get => zSize; }
+
+    public int coefSize;
 
     [Header("Ссылки на объекты")]
-    public MapGeneration map;
     public GameObject Point;
 
     public static GameManager instance { get; private set; }
@@ -21,33 +24,92 @@ public class GameManager : MonoBehaviour
 
     private ISelected selected;
 
+    private ICreate tower;
+
+    private bool create;
+
     public ICell[,] Cells { get; private set; }
+
+    private int selectionX;
+    private int selectionZ;
 
     private void Start()
     {
         instance = this;
         Cells = new ICell[xSize, zSize];
-        CreateRoad();
-        CreateHills();
-        map.CreateMap(xSize, zSize, coefSize);
     }
 
-    void CreateRoad()
+    private void Update()
     {
-        for(int x = 0; x < zSize; x++)
+        UpdateSelection();
+
+        if (create)
         {
-            ICell cell = Instantiate(Point, new Vector3(x*coefSize + coefSize / 2, -0.4f, zSize/2*coefSize + coefSize / 2), Quaternion.identity).GetComponent<ICell>();
-            cell.CreateCell(x, zSize/2, transform, TypeCell.road);
-            Cells[x, zSize/2] = cell;
-            MovePoints.Add(cell);
+            if (tower != null)
+            {
+                tower.Create(CreatePosition(), IsCreate());
+                if (Input.GetMouseButtonDown(0) && IsCreate())
+                {
+                    create = false;
+                    tower.Spawn(CreatePosition());
+                }
+
+            }
         }
     }
 
-    void CreateHills()
+    public void Create(GameObject go)
     {
-        ICell cell = Instantiate(Point, new Vector3(3 * coefSize + coefSize/2, 0.8f, 3 * coefSize + coefSize / 2), Quaternion.identity).GetComponent<ICell>();
-        cell.CreateCell(3, 3, transform, TypeCell.hill);
-        Cells[3, 3] = cell;        
+        tower = Instantiate(go).GetComponent<ICreate>();
+        tower.Create();
+        create = true;
+    }
+
+    private void UpdateSelection()
+    {
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.collider.tag == "Plane")
+            {
+                selectionX = (int)hit.point.x;
+                selectionZ = (int)hit.point.z;               
+            }
+        }
+    }
+
+    private Vector3 CreatePosition()
+    {
+        var c = Cells[selectionX, selectionZ];
+
+        if (c != null)
+            return c.pos.position + Vector3.up;
+        else
+            return new Vector3(selectionX + 0.5f, 1.0f, selectionZ + 0.5f);
+    }
+
+    private bool IsCreate()
+    {
+        var c = Cells[selectionX, selectionZ];
+        if (c == null || (c != null && c.Type == TypeCell.hill))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void AddCell(int x, int z, ICell cell)
+    {
+        if (x > -1 && x < xSize && z > -1 && z < zSize)
+            Cells[x, z] = cell;
+    }
+
+    public void RemoveCell(int x, int z)
+    {
+        if (x > -1 && x < xSize && z > -1 && z < zSize)
+            Cells[x, z] = null;
     }
 
     public void AddHealth(IHealth health)

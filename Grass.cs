@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Point : MonoBehaviour, ICell
+public class Grass : MonoBehaviour, ICrush
 {
     private int x;
     private int z;
@@ -11,12 +11,11 @@ public class Point : MonoBehaviour, ICell
 
     public int Z { get => z; }
 
-    public Transform pos { get; private set; }
-
-    [SerializeField] private TypeCell type = TypeCell.road;
+    [SerializeField] private TypeCell type = TypeCell.grass;
 
     public TypeCell Type { get => type; }
 
+    public Transform pos { get; private set; }
 
     void Start()
     {
@@ -25,18 +24,20 @@ public class Point : MonoBehaviour, ICell
         z = (int)pos.position.z;
         AddCell();
     }
-   
+
+    public void Crush()
+    {
+        GameManager.instance.RemoveCell(x, z);
+        Destroy(gameObject);
+    }
 
     private void AddCell()
-    {
+    {       
         GameManager.instance.AddCell(x, z, this);
     }
 
-
     public bool IsCreate()
     {
-        if (Type == TypeCell.hill)
-            return true;
         return false;
     }
 }

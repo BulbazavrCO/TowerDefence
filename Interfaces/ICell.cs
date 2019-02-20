@@ -7,7 +7,8 @@ public enum TypeCell
     road,
     hill,
     tower,
-    decor   
+    decor,
+    grass
 }
 
 public interface ICell 
@@ -17,9 +18,7 @@ public interface ICell
 
     TypeCell Type { get; }
 
-    Transform pos { get; }
-
-    void CreateCell(int x, int z, Transform parrent, TypeCell type);
+    Transform pos { get; }    
 
     bool IsCreate();
 }

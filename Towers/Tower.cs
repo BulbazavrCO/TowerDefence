@@ -42,21 +42,20 @@ public abstract class Tower : MonoBehaviour, ICell, ISelected, ICreate
     protected TypeAttak typeAttak;
     protected AllSounds sound;
 
-    protected bool creation = true;
+    protected bool creation;
 
     private float calculateDamage;
     
 
     [Header("Ссылка на ScritableObject объекта")]
-    public InfoTower infoTower;    
+    public InfoTower infoTower;
 
-    public void CreateCell(int x, int z, Transform parrent, TypeCell type)
+
+    private void AddCell(int x, int z)
     {
-        pos = GetComponent<Transform>();
         X = x;
         Z = z;
-        pos.SetParent(parrent);
-        Type = type;
+        GameManager.instance.AddCell(X, Z, this);
     }
 
     public void Selected()
@@ -87,6 +86,12 @@ public abstract class Tower : MonoBehaviour, ICell, ISelected, ICreate
         damage *= calculateDamage;
     }
 
+    public void Create()
+    {
+        pos = GetComponent<Transform>();
+        creation = true;
+    }
+
     public void Create(Vector3 position, bool isCreate)
     {
         pos.position = position;
@@ -96,8 +101,9 @@ public abstract class Tower : MonoBehaviour, ICell, ISelected, ICreate
             render.material = NonCreateMat;
     }
 
-    public void Spawn(Vector3 pos)
+    public void Spawn(Vector3 position)
     {
+        pos.position = position;   
         damage = infoTower.damage;
         attakSpeed = infoTower.attakSpeed;
         attakRange = infoTower.attakRange;
@@ -107,6 +113,7 @@ public abstract class Tower : MonoBehaviour, ICell, ISelected, ICreate
         sound = GetComponent<AllSounds>();
         sound.AddSound();
         creation = false;
+        AddCell((int)position.x, (int)position.y);
     }
 
     public bool IsCreate()
