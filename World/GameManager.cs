@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     [Header("Размеры карты")]
     [SerializeField] private int xSize = 15;
     [SerializeField] private int zSize = 15;
+    private int health = 30;
 
     public int XSize { get => xSize; }
     public int ZSize { get => zSize; }
@@ -14,11 +15,11 @@ public class GameManager : MonoBehaviour
     public int coefSize;
 
     [Header("Ссылки на объекты")]
-    public GameObject Point;
+    public GameObject Point;    
 
     public static GameManager instance { get; private set; }
 
-    private List<ICell> MovePoints = new List<ICell>();
+    public ControlWaves control;
 
     private List<IHealth> allHealth = new List<IHealth>();
 
@@ -112,6 +113,11 @@ public class GameManager : MonoBehaviour
             Cells[x, z] = null;
     }
 
+    public void AddMovePoints(ICell cell)
+    {
+        control.AddMovePoints(cell);
+    }
+
     public void AddHealth(IHealth health)
     {
         allHealth.Add(health);
@@ -120,5 +126,5 @@ public class GameManager : MonoBehaviour
     public void RemoveHealth(IHealth health)
     {
         allHealth.Remove(health);
-    }
+    }    
 }
